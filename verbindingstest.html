@@ -139,79 +139,86 @@ function duidingVanFout(fout) {
   return '';
 }
 
+// Onderscheid tussen 'bereikt' en 'ok' is de kern van deze test: elke statuscode,
+// ook een foutcode, bewijst dat de browser het antwoord doorlaat.
+async function voerUit(blok, url, opties) {
+  try {
+    const antwoord = await fetch(url, opties);
+    const tekst = await antwoord.text();
+    return { bereikt: true, ok: antwoord.ok, status: antwoord.status, tekst };
+  } catch (fout) {
+    afronden(blok, false,
+      '<p>Geen antwoord ontvangen; er kwam zelfs geen statuscode terug.</p>'
+      + duidingVanFout(fout)
+      + '<pre>' + ontsnap(String(fout)) + '</pre>');
+    return { bereikt: false };
+  }
+}
+
+function toonUitkomst(blok, uitkomst, gelukttekst) {
+  afronden(blok, true,
+    '<p>Statuscode: <strong>' + uitkomst.status + '</strong></p>'
+    + '<pre>' + ontsnap(uitkomst.tekst.slice(0, 800)) + '</pre>'
+    + (uitkomst.ok
+      ? '<p>' + gelukttekst + '</p>'
+      : '<p><strong>Aangekomen en beantwoord.</strong> De Homey wees het verzoek af '
+        + '— met een verzonnen sleutel is dat precies de bedoeling. Waar het hier om '
+        + 'gaat: er kwam een echt antwoord terug, dus de browser blokkeert niets.</p>'));
+}
+
 async function testGet(basis, sleutel) {
   const blok = toonTest('get', 'Test 1 — gegevens ophalen (GET, sleutel in het adres)');
   const url = basis + '/api/app/' + APP_ID + '/status?key=' + encodeURIComponent(sleutel);
-  try {
-    const antwoord = await fetch(url, { method: 'GET' });
-    const tekst = await antwoord.text();
-    const gelukt = antwoord.ok;
-    afronden(blok, gelukt,
-      '<p>Statuscode: <strong>' + antwoord.status + '</strong></p>'
-      + '<pre>' + ontsnap(tekst.slice(0, 800)) + '</pre>'
-      + (gelukt
-        ? '<p>De pagina mag je Homey bereiken.</p>'
-        : '<p>Verbinding gelukt, maar de Homey weigerde het verzoek. Controleer de sleutel.</p>'));
-    return gelukt;
-  } catch (fout) {
-    afronden(blok, false,
-      '<p>Geen antwoord ontvangen.</p>'
-      + duidingVanFout(fout)
-      + '<pre>' + ontsnap(String(fout)) + '</pre>');
-    return false;
+  const uitkomst = await voerUit(blok, url, { method: 'GET' });
+  if (uitkomst.bereikt) {
+    toonUitkomst(blok, uitkomst, 'De pagina mag je Homey bereiken en de sleutel klopt.');
   }
+  return uitkomst;
 }
 
 async function testPost(basis, sleutel) {
   const blok = toonTest('post', 'Test 2 — de veilige weg (POST, sleutel in de inhoud)');
   const url = basis + '/api/app/' + APP_ID + '/signal';
-  try {
-    const antwoord = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key: sleutel, name: 'verbindingstest' }),
-    });
-    const tekst = await antwoord.text();
-    const gelukt = antwoord.ok;
-    afronden(blok, gelukt,
-      '<p>Statuscode: <strong>' + antwoord.status + '</strong></p>'
-      + '<pre>' + ontsnap(tekst.slice(0, 800)) + '</pre>'
-      + (gelukt
-        ? '<p>De sleutel mag in de inhoud van het verzoek. Dat is de weg die we '
-          + 'willen: het adres blijft dan schoon.</p>'
-        : '<p>De Homey weigerde dit verzoek.</p>'));
-    return gelukt;
-  } catch (fout) {
-    afronden(blok, false,
-      '<p>Geen antwoord ontvangen.</p>'
-      + duidingVanFout(fout)
-      + '<pre>' + ontsnap(String(fout)) + '</pre>');
-    return false;
+  const uitkomst = await voerUit(blok, url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: sleutel, name: 'verbindingstest' }),
+  });
+  if (uitkomst.bereikt) {
+    toonUitkomst(blok, uitkomst, 'De sleutel mag in de inhoud van het verzoek. Dat is '
+      + 'de weg die we willen: het adres blijft dan schoon.');
   }
+  return uitkomst;
 }
 
-function toonConclusie(getGelukt, postGelukt) {
+function toonConclusie(get, post) {
   const blok = document.createElement('div');
   blok.className = 'conclusie';
   let tekst;
-  if (getGelukt && postGelukt) {
-    tekst = '<p><strong>Allebei gelukt.</strong> De architectuur staat, en de '
-      + 'veilige weg met de sleutel in de inhoud werkt. We kunnen bouwen zoals '
-      + 'gepland.</p>';
-  } else if (getGelukt && !postGelukt) {
-    tekst = '<p><strong>Ophalen lukt, de veilige weg niet.</strong> Het dashboard '
-      + 'kan gebouwd worden, maar maatregel 2 uit DASHBOARD.txt moet heroverwogen '
-      + 'worden: de sleutel zou dan toch in het adres moeten.</p>';
-  } else if (!getGelukt && postGelukt) {
-    tekst = '<p><strong>Onverwachte uitkomst.</strong> POST werkt wel en GET niet. '
-      + 'Kijk in de console wat er bij test 1 misging.</p>';
+
+  if (get.bereikt && post.bereikt) {
+    tekst = '<p><strong>De verbinding werkt. Dit is waar het om ging.</strong> Een '
+      + 'webpagina mag je Homey bereiken, langs beide wegen. De architectuur uit '
+      + 'DASHBOARD.txt staat, inclusief de veilige weg met de sleutel in de inhoud.</p>';
+    if (get.ok && post.ok) {
+      tekst += '<p>Bovendien klopte de sleutel: beide verzoeken zijn ook echt '
+        + 'uitgevoerd.</p>';
+    } else {
+      tekst += '<p>De sleutel werd afgewezen. Met een verzonnen sleutel is dat de '
+        + 'bedoeling; het zegt niets over de verbinding. Wil je ook de sleutel zelf '
+        + 'controleren, herhaal de test dan met de echte.</p>';
+    }
+  } else if (get.bereikt || post.bereikt) {
+    tekst = '<p><strong>Een van beide wegen komt aan, de andere niet.</strong> Dat is '
+      + 'onverwacht. Kijk in de console (F12) wat er misging bij de weg die geen '
+      + 'statuscode teruggaf.</p>';
   } else {
-    tekst = '<p><strong>Geen van beide gelukt.</strong> Als de console een '
-      + 'CORS-melding toont, kan een webpagina je Homey niet rechtstreeks '
-      + 'bereiken en moet de architectuur anders. Controleer eerst of adres en '
-      + 'sleutel kloppen door het adres uit test 1 in een nieuw tabblad te '
-      + 'plakken: werkt dat wel, dan is het echt CORS.</p>';
+    tekst = '<p><strong>Geen enkel antwoord ontvangen.</strong> Als de console een '
+      + 'CORS-melding toont, kan een webpagina je Homey niet rechtstreeks bereiken '
+      + 'en moet de architectuur anders. Controleer eerst of het adres klopt door het '
+      + 'in een nieuw tabblad te plakken: werkt dat wel, dan is het echt CORS.</p>';
   }
+
   blok.innerHTML = '<h2>Conclusie</h2>' + tekst;
   uitslag.appendChild(blok);
 }
@@ -228,9 +235,9 @@ knop.addEventListener('click', async () => {
   }
 
   knop.disabled = true;
-  const getGelukt = await testGet(basis, sleutel);
-  const postGelukt = await testPost(basis, sleutel);
-  toonConclusie(getGelukt, postGelukt);
+  const get = await testGet(basis, sleutel);
+  const post = await testPost(basis, sleutel);
+  toonConclusie(get, post);
   knop.disabled = false;
 });
 </script>
