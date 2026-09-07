@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verbindingstest Homey</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+    line-height: 1.5;
+    color: #1a1a1a;
+  }
+  h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+  p.uitleg { color: #555; margin-top: 0; }
+  label { display: block; margin-top: 1.25rem; font-weight: 600; }
+  input {
+    width: 100%;
+    padding: 0.6rem 0.7rem;
+    font-size: 1rem;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+  small { color: #666; display: block; margin-top: 0.3rem; }
+  button {
+    margin-top: 1.5rem;
+    padding: 0.7rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 0;
+    border-radius: 6px;
+    background: #5BD795;
+    color: #06301c;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .uitslag { margin-top: 2rem; }
+  .test {
+    border: 1px solid #ddd;
+    border-left-width: 5px;
+    border-radius: 6px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .test.goed { border-left-color: #22a06b; background: #f2fbf7; }
+  .test.fout { border-left-color: #d1453b; background: #fdf5f5; }
+  .test.bezig { border-left-color: #999; background: #fafafa; }
+  .test h2 { font-size: 1rem; margin: 0 0 0.4rem; }
+  .test p { margin: 0.3rem 0; }
+  pre {
+    background: #f4f4f4;
+    padding: 0.6rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    margin: 0.5rem 0 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .conclusie {
+    margin-top: 2rem;
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    background: #eef4ff;
+    border: 1px solid #c7d9f5;
+  }
+  .conclusie h2 { margin-top: 0; font-size: 1.05rem; }
+</style>
+</head>
+<body>
+
+<h1>Verbindingstest</h1>
+<p class="uitleg">
+  Deze pagina controleert of een webpagina op de achtergrond gegevens mag ophalen
+  bij je Homey. Dat is iets anders dan een adres in de adresbalk plakken, en het
+  bepaalt of het dashboard op deze manier gebouwd kan worden.
+</p>
+
+<label for="adres">Basisadres van je Homey</label>
+<input id="adres" type="text" spellcheck="false" autocomplete="off"
+       placeholder="https://xxxxx.homey.eu-west-1.homeypro.net">
+<small>
+  Alleen het deel tot en met <code>homeypro.net</code>. Het pad naar de app zet
+  ik er zelf achter.
+</small>
+
+<label for="sleutel">Sleutel</label>
+<input id="sleutel" type="password" spellcheck="false" autocomplete="off"
+       placeholder="de waarde van INBOUND_WEBHOOK_TOKEN">
+<small>
+  Blijft op dit apparaat. Wordt alleen naar je eigen Homey gestuurd en nergens
+  bewaard.
+</small>
+
+<button id="start">Test de verbinding</button>
+
+<div class="uitslag" id="uitslag"></div>
+
+<script>
+const APP_ID = 'nl.martijnstel.automationcore';
+
+const uitslag = document.getElementById('uitslag');
+const knop = document.getElementById('start');
+
+function toonTest(id, titel) {
+  const blok = document.createElement('div');
+  blok.className = 'test bezig';
+  blok.id = id;
+  blok.innerHTML = '<h2>' + titel + '</h2><p>Bezig...</p>';
+  uitslag.appendChild(blok);
+  return blok;
+}
+
+function afronden(blok, gelukt, regels) {
+  blok.className = 'test ' + (gelukt ? 'goed' : 'fout');
+  const kop = blok.querySelector('h2').outerHTML;
+  blok.innerHTML = kop + regels;
+}
+
+function ontsnap(tekst) {
+  const div = document.createElement('div');
+  div.textContent = tekst;
+  return div.innerHTML;
+}
+
+// Een mislukte CORS-controle geeft in JavaScript geen nette foutmelding maar een
+// lege TypeError; alleen de browserconsole toont de echte reden.
+function duidingVanFout(fout) {
+  if (fout instanceof TypeError) {
+    return '<p><strong>Dit lijkt op een CORS-blokkade.</strong> De browser heeft '
+      + 'het verzoek tegengehouden omdat je Homey geen toestemming geeft aan een '
+      + 'pagina van een ander adres. Open de ontwikkelaarsconsole (F12, tabblad '
+      + 'Console) om de precieze melding te zien.</p>';
+  }
+  return '';
+}
+
+async function testGet(basis, sleutel) {
+  const blok = toonTest('get', 'Test 1 — gegevens ophalen (GET, sleutel in het adres)');
+  const url = basis + '/api/app/' + APP_ID + '/status?key=' + encodeURIComponent(sleutel);
+  try {
+    const antwoord = await fetch(url, { method: 'GET' });
+    const tekst = await antwoord.text();
+    const gelukt = antwoord.ok;
+    afronden(blok, gelukt,
+      '<p>Statuscode: <strong>' + antwoord.status + '</strong></p>'
+      + '<pre>' + ontsnap(tekst.slice(0, 800)) + '</pre>'
+      + (gelukt
+        ? '<p>De pagina mag je Homey bereiken.</p>'
+        : '<p>Verbinding gelukt, maar de Homey weigerde het verzoek. Controleer de sleutel.</p>'));
+    return gelukt;
+  } catch (fout) {
+    afronden(blok, false,
+      '<p>Geen antwoord ontvangen.</p>'
+      + duidingVanFout(fout)
+      + '<pre>' + ontsnap(String(fout)) + '</pre>');
+    return false;
+  }
+}
+
+async function testPost(basis, sleutel) {
+  const blok = toonTest('post', 'Test 2 — de veilige weg (POST, sleutel in de inhoud)');
+  const url = basis + '/api/app/' + APP_ID + '/signal';
+  try {
+    const antwoord = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: sleutel, name: 'verbindingstest' }),
+    });
+    const tekst = await antwoord.text();
+    const gelukt = antwoord.ok;
+    afronden(blok, gelukt,
+      '<p>Statuscode: <strong>' + antwoord.status + '</strong></p>'
+      + '<pre>' + ontsnap(tekst.slice(0, 800)) + '</pre>'
+      + (gelukt
+        ? '<p>De sleutel mag in de inhoud van het verzoek. Dat is de weg die we '
+          + 'willen: het adres blijft dan schoon.</p>'
+        : '<p>De Homey weigerde dit verzoek.</p>'));
+    return gelukt;
+  } catch (fout) {
+    afronden(blok, false,
+      '<p>Geen antwoord ontvangen.</p>'
+      + duidingVanFout(fout)
+      + '<pre>' + ontsnap(String(fout)) + '</pre>');
+    return false;
+  }
+}
+
+function toonConclusie(getGelukt, postGelukt) {
+  const blok = document.createElement('div');
+  blok.className = 'conclusie';
+  let tekst;
+  if (getGelukt && postGelukt) {
+    tekst = '<p><strong>Allebei gelukt.</strong> De architectuur staat, en de '
+      + 'veilige weg met de sleutel in de inhoud werkt. We kunnen bouwen zoals '
+      + 'gepland.</p>';
+  } else if (getGelukt && !postGelukt) {
+    tekst = '<p><strong>Ophalen lukt, de veilige weg niet.</strong> Het dashboard '
+      + 'kan gebouwd worden, maar maatregel 2 uit DASHBOARD.txt moet heroverwogen '
+      + 'worden: de sleutel zou dan toch in het adres moeten.</p>';
+  } else if (!getGelukt && postGelukt) {
+    tekst = '<p><strong>Onverwachte uitkomst.</strong> POST werkt wel en GET niet. '
+      + 'Kijk in de console wat er bij test 1 misging.</p>';
+  } else {
+    tekst = '<p><strong>Geen van beide gelukt.</strong> Als de console een '
+      + 'CORS-melding toont, kan een webpagina je Homey niet rechtstreeks '
+      + 'bereiken en moet de architectuur anders. Controleer eerst of adres en '
+      + 'sleutel kloppen door het adres uit test 1 in een nieuw tabblad te '
+      + 'plakken: werkt dat wel, dan is het echt CORS.</p>';
+  }
+  blok.innerHTML = '<h2>Conclusie</h2>' + tekst;
+  uitslag.appendChild(blok);
+}
+
+knop.addEventListener('click', async () => {
+  const basis = document.getElementById('adres').value.trim().replace(/\/+$/, '');
+  const sleutel = document.getElementById('sleutel').value.trim();
+
+  uitslag.innerHTML = '';
+
+  if (!basis || !sleutel) {
+    uitslag.innerHTML = '<div class="test fout"><h2>Vul beide velden in</h2></div>';
+    return;
+  }
+
+  knop.disabled = true;
+  const getGelukt = await testGet(basis, sleutel);
+  const postGelukt = await testPost(basis, sleutel);
+  toonConclusie(getGelukt, postGelukt);
+  knop.disabled = false;
+});
+</script>
+
+</body>
+</html>
