@@ -263,11 +263,19 @@ document.getElementById('opnieuw-instellen').addEventListener('click', () => {
 /* ---------- verbinding ---------- */
 
 async function vraag(pad, inhoud) {
-  const antwoord = await fetch(instellingen.adres + '/api/app/' + APP_ID + pad, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(Object.assign({ key: instellingen.sleutel }, inhoud)),
-  });
+  const url = instellingen.adres + '/api/app/' + APP_ID + pad;
+  let antwoord;
+
+  try {
+    antwoord = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ key: instellingen.sleutel }, inhoud)),
+    });
+  } catch (fout) {
+    // Geen statuscode betekent dat het adres niet bereikbaar is; toon het erbij.
+    throw new Error('Geen verbinding met ' + instellingen.adres);
+  }
 
   const tekst = await antwoord.text();
   let gegevens = null;
