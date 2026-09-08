@@ -90,10 +90,11 @@
 
 <label for="sleutel">Sleutel</label>
 <input id="sleutel" type="password" spellcheck="false" autocomplete="off"
-       placeholder="de waarde van INBOUND_WEBHOOK_TOKEN">
+       placeholder="DASHBOARD_TOKEN">
 <small>
   Blijft op dit apparaat. Wordt alleen naar je eigen Homey gestuurd en nergens
-  bewaard.
+  bewaard. Gebruik de DASHBOARD_TOKEN; test 1 en 2 zullen die afwijzen, en dat
+  geeft niet — het gaat erom of er een antwoord terugkomt.
 </small>
 
 <button id="start">Test de verbinding</button>
@@ -191,32 +192,57 @@ async function testPost(basis, sleutel) {
   return uitkomst;
 }
 
-function toonConclusie(get, post) {
+async function testDashboard(basis, sleutel) {
+  const blok = toonTest('dash', 'Test 3 — het dashboard-adres');
+  const url = basis + '/api/app/' + APP_ID + '/dashboard';
+  const uitkomst = await voerUit(blok, url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: sleutel }),
+  });
+
+  if (!uitkomst.bereikt) {
+    return uitkomst;
+  }
+
+  if (uitkomst.status === 404) {
+    afronden(blok, false,
+      '<p>Statuscode: <strong>404</strong></p>'
+      + '<p><strong>Dit adres bestaat niet op je Homey.</strong> De app draait dan '
+      + 'nog zonder de nieuwe ingangen. Controleer of homey app install echt de '
+      + 'nieuwste versie heeft geplaatst.</p>');
+    return uitkomst;
+  }
+
+  toonUitkomst(blok, uitkomst, 'Het dashboard-adres werkt en de sleutel klopt.');
+  return uitkomst;
+}
+
+function toonConclusie(get, post, dash) {
   const blok = document.createElement('div');
   blok.className = 'conclusie';
   let tekst;
 
-  if (get.bereikt && post.bereikt) {
-    tekst = '<p><strong>De verbinding werkt. Dit is waar het om ging.</strong> Een '
-      + 'webpagina mag je Homey bereiken, langs beide wegen. De architectuur uit '
-      + 'DASHBOARD.txt staat, inclusief de veilige weg met de sleutel in de inhoud.</p>';
-    if (get.ok && post.ok) {
-      tekst += '<p>Bovendien klopte de sleutel: beide verzoeken zijn ook echt '
-        + 'uitgevoerd.</p>';
-    } else {
-      tekst += '<p>De sleutel werd afgewezen. Met een verzonnen sleutel is dat de '
-        + 'bedoeling; het zegt niets over de verbinding. Wil je ook de sleutel zelf '
-        + 'controleren, herhaal de test dan met de echte.</p>';
-    }
-  } else if (get.bereikt || post.bereikt) {
-    tekst = '<p><strong>Een van beide wegen komt aan, de andere niet.</strong> Dat is '
-      + 'onverwacht. Kijk in de console (F12) wat er misging bij de weg die geen '
-      + 'statuscode teruggaf.</p>';
-  } else {
+  if (!get.bereikt && !post.bereikt && !dash.bereikt) {
     tekst = '<p><strong>Geen enkel antwoord ontvangen.</strong> Als de console een '
-      + 'CORS-melding toont, kan een webpagina je Homey niet rechtstreeks bereiken '
-      + 'en moet de architectuur anders. Controleer eerst of het adres klopt door het '
-      + 'in een nieuw tabblad te plakken: werkt dat wel, dan is het echt CORS.</p>';
+      + 'CORS-melding toont, kan een webpagina je Homey niet rechtstreeks bereiken. '
+      + 'Controleer eerst of het adres klopt door het in een nieuw tabblad te '
+      + 'plakken: werkt dat wel, dan is het echt CORS.</p>';
+  } else if (get.bereikt && post.bereikt && !dash.bereikt) {
+    tekst = '<p><strong>De oude adressen werken, het dashboard-adres niet.</strong> '
+      + 'Dat is veelzeggend: de verbinding is prima, dus het ligt aan de nieuwe '
+      + 'ingang zelf. Waarschijnlijk loopt de app daar vast voordat hij kan '
+      + 'antwoorden. Kijk in de Homey-app bij de logregels van Automation Core.</p>';
+  } else if (dash.bereikt) {
+    tekst = '<p><strong>Het dashboard-adres komt aan.</strong> De verbinding en de '
+      + 'nieuwe ingang werken allebei.</p>';
+    tekst += dash.ok
+      ? '<p>De sleutel klopte ook: er kwamen echte gegevens terug.</p>'
+      : '<p>De sleutel werd afgewezen. Gebruik hierboven de DASHBOARD_TOKEN, niet de '
+        + 'oude INBOUND_WEBHOOK_TOKEN.</p>';
+  } else {
+    tekst = '<p><strong>Gemengde uitkomst.</strong> Een deel komt aan en een deel '
+      + 'niet. Kijk hierboven welke test geen statuscode gaf.</p>';
   }
 
   blok.innerHTML = '<h2>Conclusie</h2>' + tekst;
@@ -237,7 +263,8 @@ knop.addEventListener('click', async () => {
   knop.disabled = true;
   const get = await testGet(basis, sleutel);
   const post = await testPost(basis, sleutel);
-  toonConclusie(get, post);
+  const dash = await testDashboard(basis, sleutel);
+  toonConclusie(get, post, dash);
   knop.disabled = false;
 });
 </script>
