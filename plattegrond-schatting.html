@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plattegrond — gok op basis van de gesprekken</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+    line-height: 1.55;
+    color: #1a1a1a;
+    background: #fbfbfa;
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 0.2rem; }
+  h2 { font-size: 1.1rem; margin-top: 2.5rem; }
+  p.sub { color: #666; margin-top: 0; }
+  svg { width: 100%; height: auto; background: #fff; border: 1px solid #ddd; border-radius: 10px; }
+  .legenda { display: flex; flex-wrap: wrap; gap: 1.25rem; margin: 1rem 0 0; font-size: 0.85rem; }
+  .legenda span { display: flex; align-items: center; gap: 0.4rem; }
+  .bol { width: 0.7rem; height: 0.7rem; border-radius: 50%; display: inline-block; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin-top: 0.5rem; }
+  th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #e3e3e3; vertical-align: top; }
+  th { color: #555; font-weight: 600; }
+  code { background: #eee; padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<h1>Hoe ik denk dat je huis eruitziet</h1>
+<p class="sub">
+  Getekend op 08-09-2026, alleen op basis van wat er in de gesprekken en in
+  INVENTARIS.txt staat. Nog nooit een echte plattegrond gezien.
+</p>
+
+<svg viewBox="0 0 1120 980" role="img" aria-label="Geschatte plattegrond">
+  <defs>
+    <pattern id="gras" width="14" height="14" patternUnits="userSpaceOnUse">
+      <rect width="14" height="14" fill="#eef6ea"/>
+      <path d="M0 14 L7 6 M7 14 L14 6" stroke="#cfe3c6" stroke-width="1.4"/>
+    </pattern>
+  </defs>
+
+  <!-- tuin -->
+  <rect x="60" y="840" width="1000" height="110" fill="url(#gras)" stroke="#b9d3ad" stroke-width="2"/>
+  <text x="560" y="905" text-anchor="middle" font-size="22" fill="#5c7a4f">Tuin / terras</text>
+
+  <!-- buitenmuur -->
+  <rect x="60" y="40" width="1000" height="800" fill="#fff" stroke="#333" stroke-width="6"/>
+
+  <!-- binnenmuren -->
+  <g stroke="#333" stroke-width="3" fill="none">
+    <line x1="60" y1="330" x2="1060" y2="330"/>   <!-- onder de slaapvertrekken -->
+    <line x1="60" y1="470" x2="1060" y2="470"/>   <!-- onder de gang -->
+    <line x1="230" y1="40"  x2="230" y2="330"/>   <!-- toilet | badkamer -->
+    <line x1="480" y1="40"  x2="480" y2="330"/>   <!-- badkamer | slaapkamer -->
+    <line x1="790" y1="40"  x2="790" y2="330"/>   <!-- slaapkamer | studeerkamer -->
+    <line x1="400" y1="470" x2="400" y2="840"/>   <!-- keuken | eettafel -->
+    <line x1="700" y1="470" x2="700" y2="840" stroke-dasharray="10 10"/> <!-- open scheiding -->
+  </g>
+
+  <!-- deuropeningen: wit blokje over de muur -->
+  <g fill="#fff">
+    <rect x="120" y="322" width="70" height="16"/>   <!-- toilet -->
+    <rect x="320" y="322" width="80" height="16"/>   <!-- badkamer -->
+    <rect x="580" y="322" width="90" height="16"/>   <!-- slaapkamer -->
+    <rect x="880" y="322" width="90" height="16"/>   <!-- studeerkamer -->
+    <rect x="620" y="462" width="150" height="16"/>  <!-- woonkamer -->
+  </g>
+
+  <!-- voordeur -->
+  <rect x="54" y="380" width="14" height="80" fill="#c98b3a"/>
+  <text x="86" y="428" font-size="17" fill="#8a5f24">voordeur</text>
+
+  <!-- ramen -->
+  <g stroke="#4a86c9" stroke-width="7">
+    <line x1="300" y1="40" x2="420" y2="40"/>    <!-- badkamer -->
+    <line x1="560" y1="40" x2="720" y2="40"/>    <!-- slaapkamer -->
+    <line x1="860" y1="40" x2="1000" y2="40"/>   <!-- studeerkamer -->
+    <line x1="180" y1="840" x2="320" y2="840"/>  <!-- keuken -->
+    <line x1="460" y1="840" x2="640" y2="840"/>  <!-- eettafel -->
+    <line x1="760" y1="840" x2="1000" y2="840"/> <!-- zithoek -->
+  </g>
+
+  <!-- kamernamen -->
+  <g font-size="24" fill="#222" text-anchor="middle">
+    <text x="145" y="180">Toilet</text>
+    <text x="355" y="180">Badkamer</text>
+    <text x="635" y="180">Slaapkamer</text>
+    <text x="925" y="180">Studeerkamer</text>
+    <text x="560" y="415">Gang</text>
+    <text x="230" y="560">Keuken</text>
+    <text x="550" y="560">Eettafel</text>
+    <text x="880" y="560">Zithoek</text>
+  </g>
+  <text x="560" y="815" text-anchor="middle" font-size="20" fill="#888" letter-spacing="4">WOONKAMER</text>
+
+  <!-- apparaten -->
+  <g>
+    <!-- lampen: geel -->
+    <g fill="#f0b429" stroke="#8a6300" stroke-width="1.5">
+      <circle cx="145" cy="230" r="9"/>                                   <!-- toilet -->
+      <circle cx="330" cy="230" r="9"/><circle cx="390" cy="230" r="9"/>  <!-- badkamer -->
+      <circle cx="580" cy="230" r="9"/><circle cx="640" cy="230" r="9"/><circle cx="700" cy="230" r="9"/>
+      <circle cx="875" cy="230" r="9"/><circle cx="925" cy="230" r="9"/><circle cx="975" cy="230" r="9"/>
+      <circle cx="480" cy="430" r="9"/>                                   <!-- gang -->
+      <circle cx="200" cy="640" r="9"/><circle cx="280" cy="640" r="9"/>  <!-- keuken -->
+      <circle cx="500" cy="640" r="9"/><circle cx="590" cy="640" r="9"/>  <!-- eettafel -->
+      <circle cx="800" cy="640" r="9"/><circle cx="860" cy="640" r="9"/>
+      <circle cx="920" cy="640" r="9"/><circle cx="990" cy="640" r="9"/>
+    </g>
+    <!-- sensoren: blauw -->
+    <g fill="#4a86c9" stroke="#1f4b78" stroke-width="1.5">
+      <circle cx="440" cy="90" r="8"/>   <!-- badkamer -->
+      <circle cx="740" cy="90" r="8"/>   <!-- slaapkamer -->
+      <circle cx="1010" cy="90" r="8"/>  <!-- studeerkamer -->
+      <circle cx="1010" cy="700" r="8"/> <!-- woonkamer -->
+      <circle cx="640" cy="440" r="8"/>  <!-- gang: nog te komen -->
+    </g>
+    <!-- geluid: paars -->
+    <g fill="#9b6bd6" stroke="#5a3390" stroke-width="1.5">
+      <rect x="300" y="280" width="16" height="16" rx="3"/>
+      <rect x="560" y="280" width="16" height="16" rx="3"/>
+      <rect x="860" y="280" width="16" height="16" rx="3"/>
+      <rect x="980" y="770" width="16" height="16" rx="3"/>
+    </g>
+    <!-- klimaat: rood -->
+    <g fill="#e0685f" stroke="#8c322b" stroke-width="1.5">
+      <rect x="742" y="480" width="16" height="16" rx="3"/> <!-- thermostaat -->
+    </g>
+    <!-- slot: groen -->
+    <circle cx="95" cy="420" r="8" fill="#3f9e6a" stroke="#1d5e3c" stroke-width="1.5"/>
+  </g>
+</svg>
+
+<div class="legenda">
+  <span><i class="bol" style="background:#f0b429"></i> lamp</span>
+  <span><i class="bol" style="background:#4a86c9"></i> sensor</span>
+  <span><i class="bol" style="background:#9b6bd6"></i> speaker</span>
+  <span><i class="bol" style="background:#e0685f"></i> thermostaat</span>
+  <span><i class="bol" style="background:#3f9e6a"></i> slot</span>
+  <span><i class="bol" style="background:#4a86c9;border-radius:0;height:0.25rem"></i> raam</span>
+</div>
+
+<h2>Waar ik het op baseer</h2>
+
+<table>
+  <tr><th>Wat ik teken</th><th>Waarom</th></tr>
+  <tr>
+    <td>Gang in het midden, alle kamers eraan</td>
+    <td>"Alle kamers komen op de gang uit." De gang krijgt daglicht via de
+        deuropeningen, en dat is precies waarom die de betere plek is om schemer
+        te meten dan de studeerkamer.</td>
+  </tr>
+  <tr>
+    <td>Woonkamer over de volle breedte, aan de tuinzijde</td>
+    <td>Er is een tuintje "ter grootte van een balkon", en de woonkamer heeft
+        drie zones met acht lampen. Dat is de grootste ruimte.</td>
+  </tr>
+  <tr>
+    <td>Keuken open in de woonkamer</td>
+    <td>De keuken is een Hue-zone binnen de woonkamer, geen aparte kamer. Daarom
+        de stippellijn: wel een zone, geen muur.</td>
+  </tr>
+  <tr>
+    <td>Toilet apart en klein, bij de voordeur</td>
+    <td>Eén lamp, geen sensor, geen enkele flow. Typisch een gastentoilet vooraan.</td>
+  </tr>
+  <tr>
+    <td>Slaap- en studeerkamer naast elkaar aan de andere zijde</td>
+    <td>Allebei een raam met raambekleding, allebei een eigen sensor, Sonos en
+        Nest Hub. De studeerkamer heeft die altijd dicht — vandaar de omweg met
+        de schemermeting.</td>
+  </tr>
+  <tr>
+    <td>Voordeur aan de zijkant, direct in de gang</td>
+    <td>De eigen voordeur is bereikbaar zonder door de centrale hal te gaan, en
+        het ganglicht gaat aan als het slot opengaat.</td>
+  </tr>
+</table>
+
+<h2>Waar ik het meest aan twijfel</h2>
+
+<table>
+  <tr><th>Onzeker</th><th>Wat ik niet weet</th></tr>
+  <tr>
+    <td>Heeft de gang een raam?</td>
+    <td>Er stond "er hangt niets voor het raam", maar het is me nooit duidelijk
+        geworden of dat over de gang zelf ging of over de kamers eromheen. Ik heb
+        hem zonder raam getekend.</td>
+  </tr>
+  <tr>
+    <td>De wasmachine en de cv-ketel</td>
+    <td>Die komen voor in de lekbewaking maar zijn nooit aan een ruimte
+        gekoppeld. Er is dus waarschijnlijk een berging of een technische kast
+        die ik helemaal niet heb getekend.</td>
+  </tr>
+  <tr>
+    <td>De ligging ten opzichte van de zon</td>
+    <td>Nergens genoemd. De zonwering hoort aan de zonzijde, dus als de tuin op
+        het noorden ligt, klopt mijn tekening niet.</td>
+  </tr>
+  <tr>
+    <td>Of de badkamer aan de gevel ligt</td>
+    <td>Ik geef hem een raam omdat de bewegingssensor daar lichtsterkte meet en
+        er een schemertak op draait. Maar dat zou net zo goed via de deur kunnen.</td>
+  </tr>
+  <tr>
+    <td>De verhoudingen</td>
+    <td>Puur gegokt. Ik weet van geen enkele kamer de afmetingen.</td>
+  </tr>
+</table>
+
+<h2>Wat dit experiment liet zien</h2>
+<p>
+  Los van of het klopt: dit is precies hoe route A eruit zou zien. De apparaten
+  staan als gekleurde punten op vaste plekken, en per laag zou je er één kleur
+  van tonen. Dat werkt — maar het valt ook op hoe vol het wordt met alleen al de
+  lampen. Dat is een argument om op het hoofdscherm groepen te tonen in plaats
+  van losse apparaten, precies zoals we voor de woonkamer hebben gedaan.
+</p>
+
+</body>
+</html>
