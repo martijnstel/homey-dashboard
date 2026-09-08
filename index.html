@@ -2,29 +2,448 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Homey dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101418">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>Huis</title>
 <style>
-  body {
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    max-width: 34rem;
-    margin: 0 auto;
-    padding: 3rem 1.25rem;
-    line-height: 1.6;
-    color: #1a1a1a;
+  :root {
+    --achtergrond: #101418;
+    --vlak: #1a2027;
+    --vlak-aan: #2a3540;
+    --rand: #2c343d;
+    --tekst: #e8eaed;
+    --tekst-zacht: #98a2ad;
+    --accent: #5BD795;
+    --fout: #e0685f;
   }
-  h1 { font-size: 1.4rem; }
-  a { color: #0b6b45; }
-  p.klein { color: #666; font-size: 0.9rem; }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--achtergrond);
+    color: var(--tekst);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+             env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 1.25rem 0.5rem;
+  }
+
+  h1 { font-size: 1.5rem; margin: 0 0 1.25rem; font-weight: 600; }
+  h2 { font-size: 1rem; margin: 1.75rem 0 0.75rem; font-weight: 600; color: var(--tekst-zacht); }
+
+  .instellen { max-width: 26rem; margin: 0 auto; padding-top: 2rem; }
+  .instellen p { color: var(--tekst-zacht); line-height: 1.5; }
+
+  label { display: block; margin-top: 1.25rem; font-weight: 600; font-size: 0.9rem; }
+
+  input[type="url"], input[type="password"] {
+    width: 100%;
+    margin-top: 0.4rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--tekst);
+    background: var(--vlak);
+    border: 1px solid var(--rand);
+    border-radius: 10px;
+  }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  button.hoofd {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.85rem;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #06301c;
+    background: var(--accent);
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .groepen {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  .groep {
+    background: var(--vlak);
+    border: 1px solid var(--rand);
+    border-radius: 16px;
+    padding: 1rem 1.1rem 1.1rem;
+    transition: background 0.15s ease;
+  }
+  .groep.aan { background: var(--vlak-aan); }
+
+  .groep-kop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .groep-naam { font-size: 1.05rem; font-weight: 600; }
+  .groep-onder { font-size: 0.8rem; color: var(--tekst-zacht); margin-top: 0.15rem; }
+
+  .schakelaar {
+    flex: 0 0 auto;
+    width: 3.4rem;
+    height: 2rem;
+    border-radius: 999px;
+    border: 0;
+    padding: 0;
+    background: #39424c;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .schakelaar[aria-pressed="true"] { background: var(--accent); }
+  .schakelaar::after {
+    content: "";
+    position: absolute;
+    top: 0.2rem;
+    left: 0.2rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.15s ease;
+  }
+  .schakelaar[aria-pressed="true"]::after { transform: translateX(1.4rem); }
+
+  input[type="range"] {
+    width: 100%;
+    margin: 1rem 0 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    accent-color: var(--accent);
+  }
+
+  .melding { margin-top: 0.6rem; font-size: 0.8rem; color: var(--fout); }
+
+  footer {
+    padding: 0.7rem 1.25rem calc(0.7rem + env(safe-area-inset-bottom));
+    font-size: 0.78rem;
+    color: var(--tekst-zacht);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  footer button {
+    background: none;
+    border: 0;
+    color: var(--tekst-zacht);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+  }
+  .fout { color: var(--fout); }
 </style>
 </head>
 <body>
-  <h1>Homey dashboard</h1>
-  <p>Nog in aanbouw. Hier komt het eigen dashboard voor tablet en telefoon.</p>
-  <p><a href="verbindingstest.html">Verbindingstest</a></p>
-  <p class="klein">
-    Deze pagina bevat geen sleutels en geen adressen. Die worden eenmalig per
-    apparaat ingevuld en blijven daar.
-  </p>
+
+<main>
+  <section class="instellen" id="instellen" hidden>
+    <h1>Eenmalig instellen</h1>
+    <p>
+      Deze gegevens blijven op dit apparaat en worden nergens anders bewaard.
+      Ze staan niet in de pagina zelf.
+    </p>
+
+    <label for="adres">Adres van je Homey</label>
+    <input id="adres" type="url" spellcheck="false" autocomplete="off"
+           placeholder="https://xxxxx.homey.eu-west-1.homeypro.net">
+
+    <label for="sleutel">Sleutel</label>
+    <input id="sleutel" type="password" spellcheck="false" autocomplete="off">
+
+    <button class="hoofd" id="bewaar">Bewaren</button>
+    <p id="instelfout" class="melding"></p>
+  </section>
+
+  <section id="dashboard" hidden>
+    <h1>Huis</h1>
+    <div id="kamers"></div>
+  </section>
+</main>
+
+<footer>
+  <span id="status">Verbinden...</span>
+  <button id="opnieuw-instellen" hidden>Instellingen</button>
+</footer>
+
+<script>
+const OPSLAG = 'huis-dashboard';
+const APP_ID = 'nl.martijnstel.automationcore';
+const VERVERS_MS = 5000;
+
+let instellingen = null;
+let timer = null;
+let bezigMetSlepen = false;
+
+/* ---------- instellingen ---------- */
+
+function laadInstellingen() {
+  try {
+    const ruw = localStorage.getItem(OPSLAG);
+    return ruw ? JSON.parse(ruw) : null;
+  } catch (fout) {
+    return null;
+  }
+}
+
+function toonInstelscherm(bestaand) {
+  document.getElementById('dashboard').hidden = true;
+  document.getElementById('instellen').hidden = false;
+  document.getElementById('opnieuw-instellen').hidden = true;
+
+  if (bestaand && bestaand.adres) {
+    document.getElementById('adres').value = bestaand.adres;
+  }
+}
+
+function toonDashboard() {
+  document.getElementById('instellen').hidden = true;
+  document.getElementById('dashboard').hidden = false;
+  document.getElementById('opnieuw-instellen').hidden = false;
+}
+
+document.getElementById('bewaar').addEventListener('click', () => {
+  const adres = document.getElementById('adres').value.trim().replace(/\/+$/, '');
+  const sleutel = document.getElementById('sleutel').value.trim();
+  const fout = document.getElementById('instelfout');
+
+  if (!adres.startsWith('https://')) {
+    fout.textContent = 'Het adres moet met https:// beginnen.';
+    return;
+  }
+
+  if (sleutel.length < 32) {
+    fout.textContent = 'De sleutel is te kort; hij moet minstens 32 tekens hebben.';
+    return;
+  }
+
+  fout.textContent = '';
+  instellingen = { adres, sleutel };
+  localStorage.setItem(OPSLAG, JSON.stringify(instellingen));
+  document.getElementById('sleutel').value = '';
+  toonDashboard();
+  start();
+});
+
+document.getElementById('opnieuw-instellen').addEventListener('click', () => {
+  stop();
+  toonInstelscherm(instellingen);
+});
+
+/* ---------- verbinding ---------- */
+
+async function vraag(pad, inhoud) {
+  const antwoord = await fetch(instellingen.adres + '/api/app/' + APP_ID + pad, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ key: instellingen.sleutel }, inhoud)),
+  });
+
+  const tekst = await antwoord.text();
+  let gegevens = null;
+
+  try {
+    gegevens = tekst ? JSON.parse(tekst) : null;
+  } catch (fout) {
+    gegevens = null;
+  }
+
+  if (!antwoord.ok) {
+    const melding = gegevens && (gegevens.error || gegevens.message);
+    throw new Error(melding || ('Statuscode ' + antwoord.status));
+  }
+
+  return gegevens;
+}
+
+async function ververs() {
+  try {
+    teken(await vraag('/dashboard', {}));
+    meldStatus('Bijgewerkt om ' + nu(), false);
+  } catch (fout) {
+    meldStatus(fout.message, true);
+  }
+}
+
+async function stuur(kamer, groep, handeling, waarde) {
+  try {
+    const uitkomst = await vraag('/dashboard/command', {
+      room: kamer, group: groep, action: handeling, value: waarde,
+    });
+
+    if (uitkomst && uitkomst.state) {
+      teken(uitkomst.state);
+    }
+
+    meldStatus('Bijgewerkt om ' + nu(), false);
+  } catch (fout) {
+    meldStatus(fout.message, true);
+  }
+}
+
+/* ---------- tekenen ---------- */
+
+function nu() {
+  return new Date().toLocaleTimeString('nl-NL', {
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+  });
+}
+
+function meldStatus(tekst, isFout) {
+  const veld = document.getElementById('status');
+  veld.textContent = tekst;
+  veld.className = isFout ? 'fout' : '';
+}
+
+function maakGroep(kamerId, groep) {
+  const blok = document.createElement('div');
+  blok.className = 'groep' + (groep.on ? ' aan' : '');
+
+  const kop = document.createElement('div');
+  kop.className = 'groep-kop';
+
+  const namen = document.createElement('div');
+  const naam = document.createElement('div');
+  naam.className = 'groep-naam';
+  naam.textContent = groep.name;
+
+  const onder = document.createElement('div');
+  onder.className = 'groep-onder';
+  onder.textContent = groep.on
+    ? (groep.dim === null ? 'Aan' : 'Aan, ' + Math.round(groep.dim * 100) + '%')
+    : 'Uit';
+
+  namen.append(naam, onder);
+
+  const schakelaar = document.createElement('button');
+  schakelaar.className = 'schakelaar';
+  schakelaar.setAttribute('aria-pressed', String(groep.on));
+  schakelaar.setAttribute('aria-label', groep.name + (groep.on ? ' uitzetten' : ' aanzetten'));
+  schakelaar.addEventListener('click', () => {
+    stuur(kamerId, groep.id, groep.on ? 'off' : 'on');
+  });
+
+  kop.append(namen, schakelaar);
+  blok.append(kop);
+
+  const regelaar = document.createElement('input');
+  regelaar.type = 'range';
+  regelaar.min = '0';
+  regelaar.max = '100';
+  regelaar.value = String(Math.round((groep.dim === null ? 0 : groep.dim) * 100));
+  regelaar.setAttribute('aria-label', 'Helderheid ' + groep.name);
+  // Tijdens het slepen niet overschrijven door een verversing; anders springt hij terug.
+  regelaar.addEventListener('pointerdown', () => { bezigMetSlepen = true; });
+  regelaar.addEventListener('change', () => {
+    bezigMetSlepen = false;
+    stuur(kamerId, groep.id, 'dim', Number(regelaar.value) / 100);
+  });
+  blok.append(regelaar);
+
+  const problemen = [];
+
+  if (groep.missing.length > 0) {
+    problemen.push('Niet gevonden: ' + groep.missing.join(', '));
+  }
+
+  if (groep.unavailable.length > 0) {
+    problemen.push('Onbereikbaar: ' + groep.unavailable.join(', '));
+  }
+
+  if (problemen.length > 0) {
+    const melding = document.createElement('div');
+    melding.className = 'melding';
+    melding.textContent = problemen.join(' | ');
+    blok.append(melding);
+  }
+
+  return blok;
+}
+
+function teken(toestand) {
+  if (bezigMetSlepen || !toestand || !toestand.rooms) {
+    return;
+  }
+
+  const houder = document.getElementById('kamers');
+  houder.textContent = '';
+
+  for (const kamer of toestand.rooms) {
+    const kop = document.createElement('h2');
+    kop.textContent = kamer.name;
+    houder.append(kop);
+
+    const rooster = document.createElement('div');
+    rooster.className = 'groepen';
+
+    for (const groep of kamer.groups) {
+      rooster.append(maakGroep(kamer.id, groep));
+    }
+
+    houder.append(rooster);
+  }
+}
+
+/* ---------- levensloop ---------- */
+
+function start() {
+  stop();
+  ververs();
+  timer = setInterval(ververs, VERVERS_MS);
+}
+
+function stop() {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+}
+
+// Staat het scherm uit, dan hoeft er niets ververst te worden.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    stop();
+  } else if (instellingen) {
+    start();
+  }
+});
+
+instellingen = laadInstellingen();
+
+if (instellingen && instellingen.adres && instellingen.sleutel) {
+  toonDashboard();
+  start();
+} else {
+  toonInstelscherm(instellingen);
+}
+</script>
+
 </body>
 </html>
