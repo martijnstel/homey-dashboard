@@ -137,7 +137,10 @@
     background: transparent;
     border: 0;
     accent-color: var(--accent);
+    transition: opacity 0.15s ease;
   }
+  /* Uit betekent niet dat de helderheid nul is, maar wel dat hij nu niets doet. */
+  input[type="range"].gedempt { opacity: 0.35; }
 
   .melding { margin-top: 0.6rem; font-size: 0.8rem; color: var(--fout); }
 
@@ -338,7 +341,7 @@ function maakGroep(kamerId, groep) {
   onder.className = 'groep-onder';
   onder.textContent = groep.on
     ? (groep.dim === null ? 'Aan' : 'Aan, ' + Math.round(groep.dim * 100) + '%')
-    : 'Uit';
+    : (groep.dim === null ? 'Uit' : 'Uit, staat op ' + Math.round(groep.dim * 100) + '%');
 
   namen.append(naam, onder);
 
@@ -358,6 +361,7 @@ function maakGroep(kamerId, groep) {
   regelaar.min = '0';
   regelaar.max = '100';
   regelaar.value = String(Math.round((groep.dim === null ? 0 : groep.dim) * 100));
+  regelaar.className = groep.on ? '' : 'gedempt';
   regelaar.setAttribute('aria-label', 'Helderheid ' + groep.name);
   // Tijdens het slepen niet overschrijven door een verversing; anders springt hij terug.
   regelaar.addEventListener('pointerdown', () => { bezigMetSlepen = true; });
