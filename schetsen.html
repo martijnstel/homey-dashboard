@@ -57,8 +57,17 @@
   }
 
   /* ---------- 2. plattegrond ---------- */
-  .kaart { flex: 1; display: flex; justify-content: center; align-items: center; padding: 0 2.4cqw; }
-  .kaart svg { height: 100%; width: auto; }
+  .hoofd { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1fr 1.15fr; gap: 2cqw; padding: 2cqw 2.4cqw; }
+  .zijbalk { display: flex; flex-direction: column; min-height: 0; }
+  .zij-tijd { font-size: 7cqw; font-weight: 200; line-height: 1; }
+  .zij-datum { font-size: 1.7cqw; color: var(--zacht); margin-top: 0.4cqw; }
+  .zij-pillen { display: flex; gap: 0.9cqw; margin-top: 1.6cqw; flex-wrap: wrap; }
+  .zij-info { margin-top: auto; display: flex; flex-direction: column; gap: 0.7cqw; font-size: 1.6cqw; color: var(--zacht); }
+  .zij-info b { color: var(--tekst); font-weight: 500; }
+  .zij-knoppen { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9cqw; margin-top: 1.8cqw; }
+  .zij-knoppen .knop { flex: none; }
+  .kaart { min-height: 0; display: flex; justify-content: center; align-items: center; }
+  .kaart svg { height: 100%; max-height: 100%; width: auto; max-width: 100%; }
   .rm { fill: #161c23; stroke: #39434e; stroke-width: 4; }
   .rm.aan { fill: #2e2a1e; stroke: #6b5a2c; }
   .rm.buiten { fill: #12181a; stroke: #2c3a36; stroke-dasharray: 10 8; }
@@ -68,7 +77,7 @@
   .gloed { fill: #f0b429; opacity: 0.16; }
 
   /* ---------- 3. kamer ---------- */
-  .detail { flex: 1; display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.6cqw; padding: 0.6cqw 2.4cqw 1.6cqw; }
+  .detail { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.6cqw; padding: 0.6cqw 2.4cqw 1.6cqw; }
   .paneel { background: var(--vlak); border: 1px solid var(--rand); border-radius: 12px; padding: 1.5cqw 1.7cqw; }
   .paneel h3 { margin: 0 0 1.2cqw; font-size: 1.4cqw; color: var(--zacht); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
   .rij { display: flex; align-items: center; justify-content: space-between; }
@@ -114,83 +123,88 @@
 
 <h2>2. De plattegrond — het hoofdscherm</h2>
 <div class="kader">
-  <div class="kop">
-    <div class="kop-links">
-      <span class="tijd">19:42</span>
-      <span class="pil actief">Avond</span>
-      <span class="pil">Thuis</span>
+  <div class="hoofd">
+    <div class="zijbalk">
+      <div class="zij-tijd">19:42</div>
+      <div class="zij-datum">woensdag 9 september</div>
+      <div class="zij-pillen">
+        <span class="pil actief">Avond</span>
+        <span class="pil">Thuis</span>
+      </div>
+
+      <div class="zij-info">
+        <span>buiten <b>14°</b>, morgen <b>18°</b> en droog</span>
+        <span>voordeur <b>op slot</b></span>
+        <span>Sonos woonkamer speelt <b>Radio 2</b></span>
+      </div>
+
+      <div class="zij-knoppen">
+        <div class="knop">Gastmodus</div>
+        <div class="knop">Huis afsluiten</div>
+        <div class="knop">Muziek uit</div>
+        <div class="knop">Alarm herstellen</div>
+      </div>
     </div>
-    <div class="kop-rechts">
-      <span>buiten <b>14°</b></span>
-      <span>voordeur <b>op slot</b></span>
+
+    <div class="kaart">
+      <svg viewBox="0 0 700 850" role="img" aria-label="Plattegrond">
+        <!-- balkon -->
+        <rect class="rm buiten" x="370" y="20" width="310" height="140" rx="6"/>
+        <text class="nm klein" x="525" y="98" text-anchor="middle" fill="#6f8078">Balkon</text>
+
+        <!-- woonkamer -->
+        <rect class="rm aan" x="20" y="20" width="330" height="400" rx="6"/>
+        <circle class="gloed" cx="185" cy="220" r="150"/>
+        <text class="nm" x="185" y="205" text-anchor="middle">Woonkamer</text>
+        <text class="tp" x="185" y="243" text-anchor="middle">21,4°  ·  2 groepen aan</text>
+        <circle cx="300" cy="60" r="11" fill="#b48ae6"/>
+
+        <!-- keuken -->
+        <rect class="rm" x="20" y="435" width="330" height="145" rx="6"/>
+        <text class="nm klein" x="185" y="505" text-anchor="middle">Keuken</text>
+        <text class="tp" x="185" y="537" text-anchor="middle">uit</text>
+
+        <!-- slaapkamer -->
+        <rect class="rm" x="370" y="175" width="310" height="405" rx="6"/>
+        <text class="nm" x="525" y="360" text-anchor="middle">Slaapkamer</text>
+        <text class="tp" x="525" y="398" text-anchor="middle">19,8°  ·  gordijn dicht</text>
+
+        <!-- badkamer -->
+        <rect class="rm" x="20" y="595" width="180" height="235" rx="6"/>
+        <text class="nm klein" x="110" y="700" text-anchor="middle">Badkamer</text>
+        <text class="tp" x="110" y="732" text-anchor="middle">21,0°</text>
+
+        <!-- toilet -->
+        <rect class="rm" x="215" y="595" width="105" height="115" rx="6"/>
+        <text class="tp" x="267" y="660" text-anchor="middle" font-size="19">Toilet</text>
+
+        <!-- hal -->
+        <rect class="rm aan" x="215" y="725" width="245" height="105" rx="6"/>
+        <circle class="gloed" cx="337" cy="777" r="70"/>
+        <text class="nm klein" x="337" y="785" text-anchor="middle">Gang</text>
+
+        <!-- meterkast -->
+        <rect class="rm" x="335" y="595" width="125" height="115" rx="6"/>
+        <text class="tp" x="397" y="660" text-anchor="middle" font-size="18">cv / mk</text>
+
+        <!-- studeerkamer -->
+        <rect class="rm aan" x="475" y="595" width="205" height="235" rx="6"/>
+        <circle class="gloed" cx="577" cy="712" r="95"/>
+        <text class="nm klein" x="577" y="700" text-anchor="middle">Studeerkamer</text>
+        <text class="tp" x="577" y="732" text-anchor="middle">20,1°  ·  bureau aan</text>
+
+        <!-- voordeur -->
+        <rect x="300" y="825" width="75" height="10" fill="#c98b3a" rx="3"/>
+      </svg>
     </div>
-  </div>
-
-  <div class="kaart">
-    <svg viewBox="0 0 700 850" role="img" aria-label="Plattegrond">
-      <!-- balkon -->
-      <rect class="rm buiten" x="370" y="20" width="310" height="140" rx="6"/>
-      <text class="nm klein" x="525" y="98" text-anchor="middle" fill="#6f8078">Balkon</text>
-
-      <!-- woonkamer -->
-      <rect class="rm aan" x="20" y="20" width="330" height="400" rx="6"/>
-      <circle class="gloed" cx="185" cy="220" r="150"/>
-      <text class="nm" x="185" y="205" text-anchor="middle">Woonkamer</text>
-      <text class="tp" x="185" y="243" text-anchor="middle">21,4°  ·  2 groepen aan</text>
-      <circle cx="300" cy="60" r="11" fill="#b48ae6"/>
-
-      <!-- keuken -->
-      <rect class="rm" x="20" y="435" width="330" height="145" rx="6"/>
-      <text class="nm klein" x="185" y="505" text-anchor="middle">Keuken</text>
-      <text class="tp" x="185" y="537" text-anchor="middle">uit</text>
-
-      <!-- slaapkamer -->
-      <rect class="rm" x="370" y="175" width="310" height="405" rx="6"/>
-      <text class="nm" x="525" y="360" text-anchor="middle">Slaapkamer</text>
-      <text class="tp" x="525" y="398" text-anchor="middle">19,8°  ·  gordijn dicht</text>
-
-      <!-- badkamer -->
-      <rect class="rm" x="20" y="595" width="180" height="235" rx="6"/>
-      <text class="nm klein" x="110" y="700" text-anchor="middle">Badkamer</text>
-      <text class="tp" x="110" y="732" text-anchor="middle">21,0°</text>
-
-      <!-- toilet -->
-      <rect class="rm" x="215" y="595" width="105" height="115" rx="6"/>
-      <text class="tp" x="267" y="660" text-anchor="middle" font-size="19">Toilet</text>
-
-      <!-- hal -->
-      <rect class="rm aan" x="215" y="725" width="245" height="105" rx="6"/>
-      <circle class="gloed" cx="337" cy="777" r="70"/>
-      <text class="nm klein" x="337" y="785" text-anchor="middle">Gang</text>
-
-      <!-- meterkast -->
-      <rect class="rm" x="335" y="595" width="125" height="115" rx="6"/>
-      <text class="tp" x="397" y="660" text-anchor="middle" font-size="18">cv / mk</text>
-
-      <!-- studeerkamer -->
-      <rect class="rm aan" x="475" y="595" width="205" height="235" rx="6"/>
-      <circle class="gloed" cx="577" cy="712" r="95"/>
-      <text class="nm klein" x="577" y="700" text-anchor="middle">Studeerkamer</text>
-      <text class="tp" x="577" y="732" text-anchor="middle">20,1°  ·  bureau aan</text>
-
-      <!-- voordeur -->
-      <rect x="300" y="825" width="75" height="10" fill="#c98b3a" rx="3"/>
-    </svg>
-  </div>
-
-  <div class="voet">
-    <div class="knop">Gastmodus</div>
-    <div class="knop">Huis afsluiten</div>
-    <div class="knop">Muziek uit</div>
-    <div class="knop">Alarm herstellen</div>
   </div>
 </div>
 <p class="bijschrift">
-  Kamers waar licht brandt lichten warm op. Per ruimte de temperatuur en één
-  regel over wat er aan is. Het paarse bolletje in de woonkamer betekent: hier
-  speelt muziek. Geen schakelaars — tik op een ruimte voor scherm 3.
-  Het balkon staat boven, de voordeur onder: precies zoals je staat als je voor
-  de tablet staat.
+  Je huis is hoger dan breed, de tablet breder dan hoog. Daarom staat de
+  plattegrond rechts op volle hoogte en is er links een kolom over voor tijd,
+  toestand en de vier knoppen — precies de indeling die je aan het begin zelf
+  voorstelde. Kamers waar licht brandt lichten warm op. Geen schakelaars: tik op
+  een ruimte voor scherm 3.
 </p>
 
 <h2>3. Eén kamer open — hier zit de bediening</h2>
