@@ -3,124 +3,87 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Schetsen — hoe het dashboard eruit kan zien</title>
+<title>Schetsen — drie toestanden</title>
 <style>
   :root {
     --bg: #0c1015;
     --vlak: #171d24;
     --vlak2: #1f272f;
-    --aan: #2b3a3f;
     --rand: #262f38;
     --tekst: #e9ecef;
     --zacht: #8e9aa6;
     --accent: #5BD795;
     --warm: #f0b429;
     --blauw: #6aa7e8;
+    --paars: #b48ae6;
   }
   * { box-sizing: border-box; }
   body {
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    margin: 0 auto;
-    max-width: 78rem;
-    padding: 2rem 1.25rem 5rem;
-    background: #f3f3f1;
-    color: #1a1a1a;
-    line-height: 1.55;
+    margin: 0 auto; max-width: 78rem; padding: 2rem 1.25rem 5rem;
+    background: #f3f3f1; color: #1a1a1a; line-height: 1.55;
   }
   h1 { font-size: 1.5rem; margin-bottom: 0.2rem; }
   h2 { font-size: 1.15rem; margin: 3rem 0 0.3rem; }
   p.sub { color: #666; margin-top: 0; }
   .kader {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    background: var(--bg);
-    color: var(--tekst);
-    border-radius: 14px;
-    border: 10px solid #2a2a2a;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    container-type: inline-size;
+    width: 100%; aspect-ratio: 16 / 10; background: var(--bg); color: var(--tekst);
+    border-radius: 14px; border: 10px solid #2a2a2a; overflow: hidden;
+    display: flex; flex-direction: column; container-type: inline-size;
   }
   .bijschrift { font-size: 0.88rem; color: #666; margin-top: 0.6rem; }
 
-  /* ---------- scherm 1: rust ---------- */
-  .rust { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 6%; }
-  .klok { font-size: 13cqw; font-weight: 200; letter-spacing: -0.02em; line-height: 1; }
-  .datum { font-size: 2.1cqw; color: var(--zacht); margin-top: 0.6cqw; }
-  .temps { display: flex; gap: 5cqw; margin-top: 4cqw; }
-  .temp .waarde { font-size: 4.4cqw; font-weight: 300; }
-  .temp .label { font-size: 1.6cqw; color: var(--zacht); text-transform: uppercase; letter-spacing: 0.12em; }
-  .rustvoet {
-    display: flex; gap: 2.5cqw; padding: 2.2cqw 6%;
-    font-size: 1.7cqw; color: var(--zacht); border-top: 1px solid var(--rand);
-  }
-  .rustvoet b { color: var(--tekst); font-weight: 500; }
+  /* ---------- 1. vergrendeld ---------- */
+  .slaap { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 7%; opacity: 0.55; }
+  .klok { font-size: 15cqw; font-weight: 200; letter-spacing: -0.03em; line-height: 0.95; color: #cfd6dd; }
+  .datum { font-size: 2.2cqw; color: #6d7883; margin-top: 1cqw; }
+  .slaaptemp { font-size: 3cqw; color: #8e9aa6; margin-top: 3.5cqw; font-weight: 300; }
 
-  /* ---------- gedeelde balken ---------- */
+  /* ---------- balken ---------- */
   .kop {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 1.8cqw 2.4cqw; border-bottom: 1px solid var(--rand); flex: 0 0 auto;
+    padding: 1.7cqw 2.4cqw; flex: 0 0 auto;
   }
   .kop-links { display: flex; align-items: baseline; gap: 1.6cqw; }
-  .kop .tijd { font-size: 3.2cqw; font-weight: 300; }
-  .pil {
-    font-size: 1.5cqw; padding: 0.5cqw 1.2cqw; border-radius: 999px;
-    background: var(--vlak2); color: var(--zacht);
-  }
+  .kop .tijd { font-size: 3cqw; font-weight: 300; }
+  .pil { font-size: 1.5cqw; padding: 0.5cqw 1.2cqw; border-radius: 999px; background: var(--vlak2); color: var(--zacht); }
   .pil.actief { background: rgba(91,215,149,0.16); color: var(--accent); }
   .kop-rechts { display: flex; gap: 2cqw; font-size: 1.6cqw; color: var(--zacht); }
   .kop-rechts b { color: var(--tekst); font-weight: 500; }
-
-  .voet {
-    display: flex; gap: 1.2cqw; padding: 1.6cqw 2.4cqw;
-    border-top: 1px solid var(--rand); flex: 0 0 auto;
-  }
+  .voet { display: flex; gap: 1.2cqw; padding: 1.4cqw 2.4cqw; flex: 0 0 auto; }
   .knop {
-    flex: 1; text-align: center; padding: 1.3cqw 0; border-radius: 10px;
-    background: var(--vlak); font-size: 1.6cqw; color: var(--tekst);
-    border: 1px solid var(--rand);
+    flex: 1; text-align: center; padding: 1.1cqw 0; border-radius: 10px;
+    background: var(--vlak); font-size: 1.5cqw; color: var(--zacht); border: 1px solid var(--rand);
   }
 
-  /* ---------- scherm 2: hub ---------- */
-  .hub { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4cqw; padding: 1.8cqw 2.4cqw; }
-  .kamer {
-    background: var(--vlak); border: 1px solid var(--rand); border-radius: 12px;
-    padding: 1.4cqw 1.6cqw; display: flex; flex-direction: column; justify-content: space-between;
-  }
-  .kamer.brandt { background: var(--aan); border-color: #3b5158; }
-  .kamer .naam { font-size: 2cqw; font-weight: 600; }
-  .kamer .regel { font-size: 1.5cqw; color: var(--zacht); margin-top: 0.3cqw; }
-  .iconen { display: flex; gap: 0.9cqw; margin-top: 1.1cqw; }
-  .ico {
-    width: 2.6cqw; height: 2.6cqw; border-radius: 7px; background: var(--vlak2);
-    display: flex; align-items: center; justify-content: center; font-size: 1.4cqw;
-    color: var(--zacht);
-  }
-  .ico.aan { background: rgba(240,180,41,0.18); color: var(--warm); }
-  .ico.speelt { background: rgba(155,107,214,0.2); color: #c3a0f0; }
-  .ico.klimaat { background: rgba(106,167,232,0.18); color: var(--blauw); }
+  /* ---------- 2. plattegrond ---------- */
+  .kaart { flex: 1; display: flex; justify-content: center; align-items: center; padding: 0 2.4cqw; }
+  .kaart svg { height: 100%; width: auto; }
+  .rm { fill: #161c23; stroke: #39434e; stroke-width: 4; }
+  .rm.aan { fill: #2e2a1e; stroke: #6b5a2c; }
+  .rm.buiten { fill: #12181a; stroke: #2c3a36; stroke-dasharray: 10 8; }
+  .nm { fill: #d6dce2; font-size: 26px; font-weight: 600; }
+  .nm.klein { font-size: 21px; }
+  .tp { fill: #7b8894; font-size: 21px; }
+  .gloed { fill: #f0b429; opacity: 0.16; }
 
-  /* ---------- scherm 3: kamer open ---------- */
-  .detail { flex: 1; display: grid; grid-template-columns: 1.35fr 1fr; gap: 1.6cqw; padding: 1.8cqw 2.4cqw; }
-  .paneel { background: var(--vlak); border: 1px solid var(--rand); border-radius: 12px; padding: 1.6cqw 1.8cqw; }
-  .paneel h3 { margin: 0 0 1.2cqw; font-size: 1.5cqw; color: var(--zacht); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
-  .rij { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5cqw; }
+  /* ---------- 3. kamer ---------- */
+  .detail { flex: 1; display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.6cqw; padding: 0.6cqw 2.4cqw 1.6cqw; }
+  .paneel { background: var(--vlak); border: 1px solid var(--rand); border-radius: 12px; padding: 1.5cqw 1.7cqw; }
+  .paneel h3 { margin: 0 0 1.2cqw; font-size: 1.4cqw; color: var(--zacht); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  .rij { display: flex; align-items: center; justify-content: space-between; }
   .rij .naam { font-size: 1.9cqw; }
   .rij .onder { font-size: 1.35cqw; color: var(--zacht); }
-  .tuimel { width: 4.6cqw; height: 2.6cqw; border-radius: 999px; background: #39424c; position: relative; flex: 0 0 auto; }
+  .tuimel { width: 4.4cqw; height: 2.5cqw; border-radius: 999px; background: #39424c; position: relative; flex: 0 0 auto; }
   .tuimel.aan { background: var(--accent); }
-  .tuimel::after { content:""; position:absolute; top: 0.3cqw; left: 0.3cqw; width: 2cqw; height: 2cqw; border-radius: 50%; background: #fff; }
-  .tuimel.aan::after { left: auto; right: 0.3cqw; }
-  .balk { height: 0.7cqw; border-radius: 999px; background: #2c363f; margin-top: 0.5cqw; }
+  .tuimel::after { content:""; position:absolute; top: 0.28cqw; left: 0.28cqw; width: 1.94cqw; height: 1.94cqw; border-radius: 50%; background: #fff; }
+  .tuimel.aan::after { left: auto; right: 0.28cqw; }
+  .balk { height: 0.65cqw; border-radius: 999px; background: #2c363f; margin: 0.6cqw 0 1.7cqw; }
   .balk i { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
   .muziek { display: flex; gap: 1.2cqw; align-items: center; }
-  .hoes { width: 7cqw; height: 7cqw; border-radius: 8px; background: linear-gradient(135deg,#3a2f52,#6b4f8a); flex: 0 0 auto; }
-  .naarhier {
-    margin-top: 1.2cqw; padding: 1cqw; border-radius: 9px; text-align: center;
-    background: rgba(91,215,149,0.14); color: var(--accent); font-size: 1.5cqw;
-  }
-  .terug { font-size: 1.6cqw; color: var(--zacht); }
+  .hoes { width: 6.5cqw; height: 6.5cqw; border-radius: 8px; background: linear-gradient(135deg,#3a2f52,#6b4f8a); flex: 0 0 auto; }
+  .naarhier { margin-top: 1.2cqw; padding: 0.95cqw; border-radius: 9px; text-align: center; background: rgba(91,215,149,0.14); color: var(--accent); font-size: 1.5cqw; }
+  .terug { font-size: 1.7cqw; color: var(--zacht); }
 
   table { border-collapse: collapse; width: 100%; font-size: 0.92rem; margin-top: 0.5rem; }
   th, td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid #e0e0dd; vertical-align: top; }
@@ -129,34 +92,27 @@
 </head>
 <body>
 
-<h1>Drie schermen</h1>
+<h1>Drie toestanden</h1>
 <p class="sub">
-  Schetsen op tabletverhouding, 09-09-2026. Nepgegevens, echte kamers. Bedoeld om
-  op te kijken, niet om al te bouwen.
+  Herzien 09-09-2026, na de opmerking dat de plattegrond het hoofdscherm moet
+  zijn en het rustscherm een vergrendelscherm. Nepgegevens, echte plattegrond.
 </p>
 
-<h2>1. In rust — hoe het er de meeste tijd bij hangt</h2>
+<h2>1. Vergrendeld — zoals je Nest, of een always-on iPhone</h2>
 <div class="kader">
-  <div class="rust">
+  <div class="slaap">
     <div class="klok">19:42</div>
     <div class="datum">woensdag 9 september</div>
-    <div class="temps">
-      <div class="temp"><div class="waarde">21,4°</div><div class="label">binnen</div></div>
-      <div class="temp"><div class="waarde">14°</div><div class="label">buiten</div></div>
-    </div>
-  </div>
-  <div class="rustvoet">
-    <span><b>3</b> lampen aan</span>
-    <span>Sonos woonkamer speelt <b>Radio 2</b></span>
-    <span>Wekker <b>06:45</b></span>
+    <div class="slaaptemp">21,4° binnen &nbsp;·&nbsp; 14° buiten</div>
   </div>
 </div>
 <p class="bijschrift">
-  Leesbaar vanaf de bank. Eén tik of beweging voor de tablet, en scherm 2 komt
-  tevoorschijn. Na een minuut niets doen valt hij hierop terug.
+  Gedimd, alleen tijd en temperatuur. Geen wekker, geen lampenteller. Ga je
+  ervoor staan of raak je het aan, dan komt scherm 2. Het dimmen zelf laat ik aan
+  Fully Kiosk, die kan de schermhelderheid regelen en op beweging wakker worden.
 </p>
 
-<h2>2. De hub — als je ervoor staat</h2>
+<h2>2. De plattegrond — het hoofdscherm</h2>
 <div class="kader">
   <div class="kop">
     <div class="kop-links">
@@ -165,57 +121,61 @@
       <span class="pil">Thuis</span>
     </div>
     <div class="kop-rechts">
-      <span>binnen <b>21,4°</b></span>
       <span>buiten <b>14°</b></span>
-      <span>wekker <b>06:45</b></span>
+      <span>voordeur <b>op slot</b></span>
     </div>
   </div>
 
-  <div class="hub">
-    <div class="kamer brandt">
-      <div>
-        <div class="naam">Woonkamer</div>
-        <div class="regel">Zithoek en eettafel aan · 21,4°</div>
-      </div>
-      <div class="iconen">
-        <span class="ico aan">L</span><span class="ico klimaat">K</span><span class="ico speelt">M</span>
-      </div>
-    </div>
-    <div class="kamer">
-      <div>
-        <div class="naam">Keuken</div>
-        <div class="regel">Uit</div>
-      </div>
-      <div class="iconen"><span class="ico">L</span></div>
-    </div>
-    <div class="kamer">
-      <div>
-        <div class="naam">Slaapkamer</div>
-        <div class="regel">Uit · 19,8° · gordijn dicht</div>
-      </div>
-      <div class="iconen"><span class="ico">L</span><span class="ico klimaat">K</span><span class="ico">M</span></div>
-    </div>
-    <div class="kamer brandt">
-      <div>
-        <div class="naam">Studeerkamer</div>
-        <div class="regel">Bureau aan · 20,1°</div>
-      </div>
-      <div class="iconen"><span class="ico aan">L</span><span class="ico">M</span></div>
-    </div>
-    <div class="kamer">
-      <div>
-        <div class="naam">Badkamer</div>
-        <div class="regel">Uit · 21,0°</div>
-      </div>
-      <div class="iconen"><span class="ico">L</span><span class="ico">M</span></div>
-    </div>
-    <div class="kamer">
-      <div>
-        <div class="naam">Gang en toilet</div>
-        <div class="regel">Uit · voordeur op slot</div>
-      </div>
-      <div class="iconen"><span class="ico">L</span></div>
-    </div>
+  <div class="kaart">
+    <svg viewBox="0 0 700 850" role="img" aria-label="Plattegrond">
+      <!-- balkon -->
+      <rect class="rm buiten" x="370" y="20" width="310" height="140" rx="6"/>
+      <text class="nm klein" x="525" y="98" text-anchor="middle" fill="#6f8078">Balkon</text>
+
+      <!-- woonkamer -->
+      <rect class="rm aan" x="20" y="20" width="330" height="400" rx="6"/>
+      <circle class="gloed" cx="185" cy="220" r="150"/>
+      <text class="nm" x="185" y="205" text-anchor="middle">Woonkamer</text>
+      <text class="tp" x="185" y="243" text-anchor="middle">21,4°  ·  2 groepen aan</text>
+      <circle cx="300" cy="60" r="11" fill="#b48ae6"/>
+
+      <!-- keuken -->
+      <rect class="rm" x="20" y="435" width="330" height="145" rx="6"/>
+      <text class="nm klein" x="185" y="505" text-anchor="middle">Keuken</text>
+      <text class="tp" x="185" y="537" text-anchor="middle">uit</text>
+
+      <!-- slaapkamer -->
+      <rect class="rm" x="370" y="175" width="310" height="405" rx="6"/>
+      <text class="nm" x="525" y="360" text-anchor="middle">Slaapkamer</text>
+      <text class="tp" x="525" y="398" text-anchor="middle">19,8°  ·  gordijn dicht</text>
+
+      <!-- badkamer -->
+      <rect class="rm" x="20" y="595" width="180" height="235" rx="6"/>
+      <text class="nm klein" x="110" y="700" text-anchor="middle">Badkamer</text>
+      <text class="tp" x="110" y="732" text-anchor="middle">21,0°</text>
+
+      <!-- toilet -->
+      <rect class="rm" x="215" y="595" width="105" height="115" rx="6"/>
+      <text class="tp" x="267" y="660" text-anchor="middle" font-size="19">Toilet</text>
+
+      <!-- hal -->
+      <rect class="rm aan" x="215" y="725" width="245" height="105" rx="6"/>
+      <circle class="gloed" cx="337" cy="777" r="70"/>
+      <text class="nm klein" x="337" y="785" text-anchor="middle">Gang</text>
+
+      <!-- meterkast -->
+      <rect class="rm" x="335" y="595" width="125" height="115" rx="6"/>
+      <text class="tp" x="397" y="660" text-anchor="middle" font-size="18">cv / mk</text>
+
+      <!-- studeerkamer -->
+      <rect class="rm aan" x="475" y="595" width="205" height="235" rx="6"/>
+      <circle class="gloed" cx="577" cy="712" r="95"/>
+      <text class="nm klein" x="577" y="700" text-anchor="middle">Studeerkamer</text>
+      <text class="tp" x="577" y="732" text-anchor="middle">20,1°  ·  bureau aan</text>
+
+      <!-- voordeur -->
+      <rect x="300" y="825" width="75" height="10" fill="#c98b3a" rx="3"/>
+    </svg>
   </div>
 
   <div class="voet">
@@ -226,16 +186,19 @@
   </div>
 </div>
 <p class="bijschrift">
-  Zes vakken, één per ruimte. In één blik zie je wat er brandt, hoe warm het is
-  en of er iets speelt. Tik op een vak voor scherm 3.
+  Kamers waar licht brandt lichten warm op. Per ruimte de temperatuur en één
+  regel over wat er aan is. Het paarse bolletje in de woonkamer betekent: hier
+  speelt muziek. Geen schakelaars — tik op een ruimte voor scherm 3.
+  Het balkon staat boven, de voordeur onder: precies zoals je staat als je voor
+  de tablet staat.
 </p>
 
-<h2>3. Eén kamer open — waar je het werk doet</h2>
+<h2>3. Eén kamer open — hier zit de bediening</h2>
 <div class="kader">
   <div class="kop">
     <div class="kop-links">
       <span class="terug">&larr; Huis</span>
-      <span class="tijd" style="font-size:2.6cqw">Woonkamer</span>
+      <span class="tijd" style="font-size:2.5cqw">Woonkamer</span>
     </div>
     <div class="kop-rechts"><span>21,4°</span><span>ingesteld <b>20,5°</b></span></div>
   </div>
@@ -248,20 +211,20 @@
         <div class="tuimel aan"></div>
       </div>
       <div class="balk"><i style="width:60%"></i></div>
-      <div class="rij" style="margin-top:1.8cqw">
+      <div class="rij">
         <div><div class="naam">Eettafel</div><div class="onder">Aan, 40%</div></div>
         <div class="tuimel aan"></div>
       </div>
       <div class="balk"><i style="width:40%"></i></div>
-      <div class="rij" style="margin-top:1.8cqw">
+      <div class="rij">
         <div><div class="naam">Keuken</div><div class="onder">Uit, staat op 80%</div></div>
         <div class="tuimel"></div>
       </div>
-      <div class="balk"><i style="width:80%;opacity:0.35"></i></div>
+      <div class="balk"><i style="width:80%;opacity:0.3"></i></div>
     </div>
 
     <div>
-      <div class="paneel" style="margin-bottom:1.6cqw">
+      <div class="paneel" style="margin-bottom:1.4cqw">
         <h3>Muziek</h3>
         <div class="muziek">
           <div class="hoes"></div>
@@ -274,10 +237,10 @@
       </div>
       <div class="paneel">
         <h3>Klimaat</h3>
-        <div class="rij" style="margin-bottom:0.8cqw">
+        <div class="rij" style="margin-bottom:1.1cqw">
           <div><div class="naam">Thermostaat</div><div class="onder">20,5° ingesteld</div></div>
         </div>
-        <div class="rij" style="margin-bottom:0">
+        <div class="rij">
           <div><div class="naam">Zonwering</div><div class="onder">Omhoog</div></div>
           <div class="tuimel"></div>
         </div>
@@ -286,65 +249,60 @@
   </div>
 </div>
 <p class="bijschrift">
-  Alles wat je in die kamer kunt doen, op één scherm. Losse lampen zitten nog een
-  tik dieper, achter de naam van een groep.
+  Onveranderd gebleven; hier had je geen commentaar op. Losse lampen zitten nog
+  een tik dieper, achter de naam van een groep.
 </p>
 
-<h2>Waarom deze opzet, gegeven je antwoorden</h2>
+<h2>Wat er is veranderd, en waarom</h2>
 
 <table>
-  <tr><th>Jouw antwoord</th><th>Wat ik ermee doe</th></tr>
+  <tr><th>Jouw opmerking</th><th>Wat ik heb gedaan</th></tr>
   <tr>
-    <td>"Vanaf de bank is tijd en temperatuur voldoende"</td>
-    <td>Scherm 1 heeft cijfers die je van vier meter leest, en onderin één regel
-        met wat er brandt en speelt. Meer niet.</td>
+    <td>"Scherm 1 is een vergrendelscherm, zoals mijn Nest"</td>
+    <td>Alleen tijd, datum en twee temperaturen. Wekker en lampenteller eruit.
+        Gedimd weergegeven.</td>
   </tr>
   <tr>
-    <td>"Even een lamp erbij als ik ga koken"</td>
-    <td>De keuken is een eigen vak op scherm 2. Twee tikken: vak, dan schakelaar.
-        Of één als we de schakelaar op scherm 2 zetten.</td>
+    <td>"Scherm 1 en 2 zijn bij jou functioneel hetzelfde"</td>
+    <td>Klopte. De informatiebalk die ik onder scherm 1 had gezet, hoort thuis in
+        de plattegrond zelf.</td>
   </tr>
   <tr>
-    <td>"Controleren welke muziek speelt en die naar een kamer brengen"</td>
-    <td>Op scherm 2 zie je aan het paarse blokje waar iets speelt. Op scherm 3
-        staat "Muziek naar deze kamer" als één knop.</td>
+    <td>"Een plattegrond voelt als míjn dashboard"</td>
+    <td>De plattegrond is het hoofdscherm geworden, met de echte indeling uit de
+        NEN-tekening.</td>
   </tr>
   <tr>
-    <td>"Zonwering vast omlaag omdat het een warme dag wordt"</td>
-    <td>Klimaat staat op scherm 3 van de woonkamer, naast het licht. Geen aparte
-        laag waar je naartoe moet.</td>
-  </tr>
-  <tr>
-    <td>"Dieper graven doe ik eerder via de telefoon"</td>
-    <td>De tablet blijft op deze twee niveaus. Dagfases, slaapgegevens en de
-        controles komen op de telefoon, en op de tablet hooguit als pil.</td>
-  </tr>
-  <tr>
-    <td>"Navigatie zoals het oude dashboard, maar beter"</td>
-    <td>Huis en kamer, net als toen. Het verschil: je springt niet terug naar
-        het begin, en het rustscherm is geen leeg beginscherm maar zelf nuttig.</td>
-  </tr>
-  <tr>
-    <td>"Geen licht- of donkerstand, wel dimmen 's nachts"</td>
-    <td>Eén donker uiterlijk. Het dimmen laat ik aan Fully Kiosk; dat kan de
-        schermhelderheid per tijdstip regelen en dat is betrouwbaarder dan het
-        in de pagina bouwen.</td>
+    <td>"Nog niet te veel schakelmogelijkheden op dit scherm"</td>
+    <td>Geen enkele schakelaar in de plattegrond. Alleen kijken en doorklikken.
+        De vier situatieknoppen staan er nog wel; zie de vraag hieronder.</td>
   </tr>
 </table>
 
-<h2>Wat dit betekent voor de plattegrond</h2>
-<p>
-  Je drie voorbeelden waren alle drie kamergericht: je wilt iets doen in een
-  ruimte. Daar past een lijst met kamers beter bij dan een plattegrond, want op
-  een plattegrond moet je eerst zoeken waar je bent.
-</p>
-<p>
-  Maar de plattegrond hoeft daarmee niet te vervallen. Hij zou juist <em>scherm
-  1</em> kunnen zijn: van een afstand zie je je huis met de ruimtes waar licht
-  brandt opgelicht. Dat is precies wat je vanaf de bank wilt zien, en het is
-  mooier dan cijfers. De vraag is dan of je er ook op wilt kunnen tikken, of dat
-  het puur kijken is.
-</p>
+<h2>Drie dingen die ik nog niet weet</h2>
+
+<table>
+  <tr><th>Vraag</th><th>Waarom het uitmaakt</th></tr>
+  <tr>
+    <td>Mogen de vier situatieknoppen onderaan blijven staan?</td>
+    <td>Het zijn schakelaars, en die wilde je hier niet. Maar het zijn ook precies
+        de dingen waarvoor je naar de tablet loopt. Ze staan er nu bescheiden in;
+        ze kunnen ook een tik dieper.</td>
+  </tr>
+  <tr>
+    <td>Wat gebeurt er als je op de gang of het toilet tikt?</td>
+    <td>Die hebben één lamp en verder niets. Een heel scherm openen voor één
+        schakelaar voelt zwaar. Optie: bij zulke ruimtes wél direct schakelen bij
+        aantikken.</td>
+  </tr>
+  <tr>
+    <td>Moet de keuken een eigen vak zijn, of hoort hij bij de woonkamer?</td>
+    <td>Bouwkundig is het één ruimte met een open verbinding. In Homey is het een
+        aparte lichtgroep binnen de woonkamer. Op de plattegrond heb ik hem apart
+        gezet omdat je hem apart bedient — maar dan klopt de tekening niet
+        helemaal met de muren.</td>
+  </tr>
+</table>
 
 </body>
 </html>
