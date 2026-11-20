@@ -1,0 +1,152 @@
+  :root {
+    --achtergrond: #101418;
+    --vlak: #1a2027;
+    --vlak-aan: #2a3540;
+    --rand: #2c343d;
+    --tekst: #e8eaed;
+    --tekst-zacht: #98a2ad;
+    --accent: #5BD795;
+    --fout: #e0685f;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--achtergrond);
+    color: var(--tekst);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+             env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 1.25rem 0.5rem;
+  }
+
+  h1 { font-size: 1.5rem; margin: 0 0 1.25rem; font-weight: 600; }
+  h2 { font-size: 1rem; margin: 1.75rem 0 0.75rem; font-weight: 600; color: var(--tekst-zacht); }
+
+  .instellen { max-width: 26rem; margin: 0 auto; padding-top: 2rem; }
+  .instellen p { color: var(--tekst-zacht); line-height: 1.5; }
+
+  label { display: block; margin-top: 1.25rem; font-weight: 600; font-size: 0.9rem; }
+
+  input[type="url"], input[type="password"] {
+    width: 100%;
+    margin-top: 0.4rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--tekst);
+    background: var(--vlak);
+    border: 1px solid var(--rand);
+    border-radius: 10px;
+  }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  button.hoofd {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.85rem;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #06301c;
+    background: var(--accent);
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .groepen {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  .groep {
+    background: var(--vlak);
+    border: 1px solid var(--rand);
+    border-radius: 16px;
+    padding: 1rem 1.1rem 1.1rem;
+    transition: background 0.15s ease;
+  }
+  .groep.aan { background: var(--vlak-aan); }
+
+  .groep-kop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .groep-naam { font-size: 1.05rem; font-weight: 600; }
+  .groep-onder { font-size: 0.8rem; color: var(--tekst-zacht); margin-top: 0.15rem; }
+
+  .schakelaar {
+    flex: 0 0 auto;
+    width: 3.4rem;
+    height: 2rem;
+    border-radius: 999px;
+    border: 0;
+    padding: 0;
+    background: #39424c;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .schakelaar[aria-pressed="true"] { background: var(--accent); }
+  .schakelaar::after {
+    content: "";
+    position: absolute;
+    top: 0.2rem;
+    left: 0.2rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.15s ease;
+  }
+  .schakelaar[aria-pressed="true"]::after { transform: translateX(1.4rem); }
+
+  input[type="range"] {
+    width: 100%;
+    margin: 1rem 0 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    accent-color: var(--accent);
+    transition: opacity 0.15s ease;
+  }
+  /* Uit betekent niet dat de helderheid nul is, maar wel dat hij nu niets doet. */
+  input[type="range"].gedempt { opacity: 0.35; }
+
+  .melding { margin-top: 0.6rem; font-size: 0.8rem; color: var(--fout); }
+
+  footer {
+    padding: 0.7rem 1.25rem calc(0.7rem + env(safe-area-inset-bottom));
+    font-size: 0.78rem;
+    color: var(--tekst-zacht);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  footer button {
+    background: none;
+    border: 0;
+    color: var(--tekst-zacht);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+  }
+  .fout { color: var(--fout); }

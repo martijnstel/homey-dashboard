@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; manifest-src 'self'; connect-src https://*.homeypro.net; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101418">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>Huis</title>
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<main>
+  <section class="instellen" id="instellen" hidden>
+    <h1>Eenmalig instellen</h1>
+    <p>
+      Deze gegevens blijven op dit apparaat en worden nergens anders bewaard.
+      Ze staan niet in de pagina zelf.
+    </p>
+
+    <label for="adres">Adres van je Homey</label>
+    <input id="adres" type="url" spellcheck="false" autocomplete="off"
+           placeholder="https://xxxxx.homey.eu-west-1.homeypro.net">
+
+    <label for="sleutel">Sleutel</label>
+    <input id="sleutel" type="password" spellcheck="false" autocomplete="off">
+
+    <button class="hoofd" id="bewaar">Bewaren</button>
+    <p id="instelfout" class="melding"></p>
+  </section>
+
+  <section id="dashboard" hidden>
+    <h1>Huis</h1>
+    <div id="kamers"></div>
+  </section>
+</main>
+
+<footer>
+  <span id="status">Verbinden...</span>
+  <button id="opnieuw-instellen" hidden>Instellingen</button>
+</footer>
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>

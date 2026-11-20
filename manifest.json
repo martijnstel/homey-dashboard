@@ -1,0 +1,9 @@
+{
+  "name": "Huis",
+  "short_name": "Huis",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#101418",
+  "theme_color": "#101418"
+}
