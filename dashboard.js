@@ -1,6 +1,9 @@
 const OPSLAG = 'huis-dashboard';
 const APP_ID = 'nl.martijnstel.automationcore';
 const VERVERS_MS = 5000;
+// Vingerafdruk (SHA-256) van de hostnaam van de eigen Homey. Het adres zelf staat bewust niet in
+// deze openbare pagina; uit de vingerafdruk is het niet terug te rekenen.
+const HOMEY_VINGERAFDRUK = 'c20d2d6b26e241f18668a6d1addd5991d4939cc51b4720fff8cbb651215dcf93';
 
 let instellingen = null;
 let timer = null;
@@ -31,6 +34,21 @@ function isHomeyAdres(adres) {
   }
 }
 
+async function vingerafdruk(tekst) {
+  const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(tekst));
+
+  return Array.from(new Uint8Array(bytes), (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Alleen de eigen Homey: een echt Homey-adres van iemand anders wordt ook geweigerd.
+async function isEigenHomey(adres) {
+  if (!isHomeyAdres(adres)) {
+    return false;
+  }
+
+  return (await vingerafdruk(new URL(adres).hostname.toLowerCase())) === HOMEY_VINGERAFDRUK;
+}
+
 function toonInstelscherm(bestaand) {
   document.getElementById('dashboard').hidden = true;
   document.getElementById('instellen').hidden = false;
@@ -47,15 +65,15 @@ function toonDashboard() {
   document.getElementById('opnieuw-instellen').hidden = false;
 }
 
-document.getElementById('bewaar').addEventListener('click', () => {
+document.getElementById('bewaar').addEventListener('click', async () => {
   const adres = document.getElementById('adres').value.trim().replace(/\/+$/, '');
   const sleutel = document.getElementById('sleutel').value.trim();
   const fout = document.getElementById('instelfout');
 
   // Alleen een Homey-cloudadres: zo kan de sleutel nooit naar een andere server, ook niet
   // na een tikfout of een vervalst adres. Het beveiligingsbeleid in index.html houdt het ook tegen.
-  if (!isHomeyAdres(adres)) {
-    fout.textContent = 'Dit is geen Homey-cloudadres. Het moet beginnen met https:// en eindigen op .homeypro.net.';
+  if (!(await isEigenHomey(adres))) {
+    fout.textContent = 'Dit is niet het adres van jouw Homey. Neem het adres over uit 1Password.';
     return;
   }
 
@@ -266,9 +284,11 @@ document.addEventListener('visibilitychange', () => {
 
 instellingen = laadInstellingen();
 
-if (instellingen && isHomeyAdres(instellingen.adres) && instellingen.sleutel) {
-  toonDashboard();
-  start();
-} else {
-  toonInstelscherm(instellingen);
-}
+(async () => {
+  if (instellingen && instellingen.sleutel && await isEigenHomey(instellingen.adres)) {
+    toonDashboard();
+    start();
+  } else {
+    toonInstelscherm(instellingen);
+  }
+})();
